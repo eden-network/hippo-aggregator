@@ -24,6 +24,7 @@ module hippo_aggregator::aggregator {
     const DEX_DITTO: u8 = 5;
     const DEX_TORTUGA: u8 = 6;
     const DEX_APTOSWAP: u8 = 7;
+    const DEX_SOKEL: u8 = 8;
 
     const HIPPO_CONSTANT_PRODUCT:u64 = 1;
     const HIPPO_PIECEWISE:u64 = 3;
@@ -37,6 +38,7 @@ module hippo_aggregator::aggregator {
     const E_TYPE_NOT_EQUAL: u64 = 7;
     const E_COIN_STORE_NOT_EXITES: u64 = 8;
     const E_UNSUPPORTED_NUM_STEPS: u64 = 9;
+    const E_INVALID_PAIR_OF_SOKEL: u64 = 10;
 
     struct EventStore has key {
         swap_step_events: EventHandle<SwapStepEvent>,
@@ -245,6 +247,30 @@ module hippo_aggregator::aggregator {
         //     if (type_of<X>() == type_of<AptosCoin>() && type_of<Y>() == type_of<staked_coin::StakedAptos>()){
         //     use ditto::ditto_staking;
         // else if (dex_type == DEX_DITTO) {
+        else if (dex_type == DEX_SOKEL) {
+            if (type_of<X>() == type_of<AptosCoin>() && type_of<Y>() == type_of<sokel::coin::Coin>()){
+                (
+                    option::none(),
+                    change_coin_type<sokel::coin::Coin, Y>(
+                        sokel::controller::mint_direct(
+                            change_coin_type<X, AptosCoin>(x_in)
+                        )
+                    )
+                )
+            }
+            else if (type_of<X>() == type_of<sokel::coin::Coin>() && type_of<Y>() == type_of<AptosCoin>()){
+                (
+                    option::none(),
+                    change_coin_type<AptosCoin, Y>(
+                        sokel::instant::swap_direct(
+                            change_coin_type<X, sokel::coin::Coin>(x_in)
+                        )
+                    ))
+            }
+            else {
+                abort E_INVALID_PAIR_OF_SOKEL
+            }
+        }
         else {
             abort E_UNKNOWN_DEX
         };

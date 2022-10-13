@@ -1,0 +1,11 @@
+[package]
+name = "sokel"
+version = "0.0.0"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "827e1c63739bbf06dad94f503a325e08b0daeb97" }
+
+[addresses]
+sokel = "0xb950e51bb7efe39c2f8c0eba6d2c5d053992e6cdee7f78d14709e2e52bbffcbe"
+
+

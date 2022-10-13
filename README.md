@@ -4,3 +4,4 @@ Currently supports:
 - Hippo Swap
 - Econia
 - Pontem
+- Sokel
